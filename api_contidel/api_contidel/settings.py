@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -106,6 +108,22 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    # Adicione outros backends de autenticação, se necessário
+)
+
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
+
+
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -113,6 +131,13 @@ REST_FRAMEWORK = {
 
    
 }
+
+SIMPLE_JWT = {
+
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=20),
+}
+
 
 DJ_REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'core.serializers.CustomLoginSerializer'
@@ -143,6 +168,21 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 TOKEN_AUTH_HEADER = 'Bearer'
 
+#configuração para o django aceder a pasta dos arquivos de mídea da raíz do computador 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Substitua pelo servidor SMTP do seu provedor de e-mail
+EMAIL_PORT = 587  # Porta do servidor SMTP (587 é comum para TLS)
+EMAIL_USE_TLS = True  # Use TLS para criptografar a conexão
+
+# Substitua com seu endereço de e-mail e senha
+EMAIL_HOST_USER = 'investdominis2023@gmail.com'
+EMAIL_HOST_PASSWORD = 'iiequgcuwwqieoxp'
+
+# Endereço de e-mail padrão que aparecerá como remetente
+DEFAULT_FROM_EMAIL = 'investdominis2023@gmail.com'  # Substitua com o endereço que você deseja usar como remetente
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
