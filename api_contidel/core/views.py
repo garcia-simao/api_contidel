@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from dj_rest_auth.views import LoginView
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from dj_rest_auth.views import LoginView
@@ -27,6 +28,12 @@ from .models import Categoria
 from .serializers import CategoriaSerializer
 from .models import Produto
 from .serializers import ProdutoSerializer
+from .models import Menu
+from .serializers import MenuSerializer
+from .models import TipoUsuario
+from .serializers import TipoUsuarioSerializer
+
+
 
 
 from .models import Continente
@@ -146,6 +153,7 @@ class CustomLoginView(LoginView):
         response = super().get_response()
         if response.status_code == status.HTTP_200_OK:
             user = self.user
+
             usuario_data = {
                 'id': user.id,
                 'nome': user.nome,
@@ -158,7 +166,8 @@ class CustomLoginView(LoginView):
                 'tipo_veiculo': user.tipo_veiculo,
                 'capacidade_do_armazem': user.capacidade_do_armazem,
                 'tipo_mercadoria': user.tipo_mercadoria,
-                'tipo_de_entidade': user.tipo_de_entidade,
+                'tipo_de_entidade': user.tipo_de_usuario.nome,
+                'rota': user.tipo_de_usuario.rota
                 # campos exibidos do usuario que fez login
             }
             response.data['usuario_data'] = usuario_data
@@ -223,8 +232,9 @@ class Submeter_FacturaViewSet(viewsets.ModelViewSet):
     queryset = Submeter_Factura.objects.all()
     serializer_class = Submeter_FacturaSerializer
 
+    def pegar_usuario(self, serializer):
+        serializer.save(usuario=self.request.Usuario)
     
-
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
@@ -252,3 +262,29 @@ class ProdutoViewSet(viewsets.ModelViewSet):
 
     
 
+class MenuViewSet(generics.ListAPIView):
+    queryset = Menu.objects.exclude(pai__isnull=True)
+    serializer_class = MenuSerializer
+
+     #aplicação de filtros
+    def get_queryset(self):
+        queryset = Menu.objects.exclude(pai__isnull=True)
+        
+        #isto permite que ao passar vários parametros ele retorne uma lista de todos elementos em relação ao parametros que passamos na url.
+        id_do_usuario = self.request.query_params.get('id_do_usuario')
+        queryGetUsuario = Usuario.objects.filter(id = id_do_usuario )
+        
+        for usuario in queryGetUsuario:
+            tipoDeusuario = usuario.tipo_de_usuario
+
+            
+        if id_do_usuario:
+            queryset = queryset.filter(id_do_usuario=tipoDeusuario)
+            return queryset
+        return queryset
+
+
+
+class TipoUsuarioViewSet(viewsets.ModelViewSet):
+    queryset = TipoUsuario.objects.all()
+    serializer_class = TipoUsuarioSerializer

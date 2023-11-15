@@ -1,12 +1,12 @@
 
-GET http://127.0.0.1:8000/comprador-submeter-factura/
+GET http://127.0.0.1:8000/usuario/
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjk2ODY5OTY1LCJpYXQiOjE2OTY4Njk2NjUsImp0aSI6ImQyZmE1NmYwYzVkOTRkMWVhNzRiNWJhMDlmZThkNTllIiwidXNlcl9pZCI6MX0.CbFZFuA4Qe3i4VGjtQhNxtb4rsOp_E_4kVTdNVi30ps
 
 
 
 ###
 
-GET http://emhtcellotyoasg.clouds2africa.com:1599/comprador-submeter-factura/
+GET http://emhtcellotyoasg.clouds2africa.com:1599/usuario/
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjozMTU2NDA0ODE3LCJpYXQiOjE2OTQ1MTY4MTcsImp0aSI6IjQzNWQzM2Y5MTdmNTQ4ZjU4OGNhMjZhMmM4ODk5NjFkIiwidXNlcl9pZCI6MX0.AJ8dPLnJNOXni95rU_Wt-2he_l7fZOiamTX93w7zn3I
 
 

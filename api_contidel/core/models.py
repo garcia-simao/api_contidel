@@ -8,6 +8,25 @@ from django.db.models.signals import post_save
 
 
 
+class TipoUsuario(models.Model):
+    nome = models.CharField(max_length=100)
+    rota = models.CharField(max_length=100) 
+
+    def __str__(self):
+        return self.nome
+
+"""""
+if not TipoUsuario.objects.exists():
+    TipoUsuario.objects.create(nome='Comprador')
+    TipoUsuario.objects.create(nome='Despachante')
+    TipoUsuario.objects.create(nome='Tranportadora')
+    TipoUsuario.objects.create(nome='Storage')
+
+    TipoUsuario.objects.create(rota='/comprador')
+    TipoUsuario.objects.create(rota='/despachante')
+    TipoUsuario.objects.create(rota='/transportadora')
+    TipoUsuario.objects.create(rota='/storage')
+"""""
 
 
 class UsuarioManager(BaseUserManager):
@@ -44,7 +63,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     tipo_veiculo = models.CharField(max_length=45, blank=True)
     capacidade_do_armazem = models.CharField(max_length=45, blank=True)
     tipo_mercadoria = models.CharField(max_length=85, blank=True)
-    tipo_de_entidade = models.CharField(max_length=85, blank=True)
+    tipo_de_usuario = models.ForeignKey(TipoUsuario, on_delete=models.CASCADE)
     is_staff = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
@@ -117,7 +136,7 @@ class Categoria(models.Model):
     
 
 class Produto(models.Model):
-    id_da_categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT)
+    id_da_categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     nome = models.CharField(max_length=100)
 
 
@@ -1966,7 +1985,7 @@ if not Municipio.objects.exists():
     
     
 
-
+#models do comprador
 class Registrar_Fornecedor_mercadoria(models.Model):
     nome = models.CharField(max_length=150)
     email = models.EmailField(max_length=50)
@@ -2002,26 +2021,71 @@ class Submeter_Factura(models.Model):
     data_da_compra = models.DateField()
     id_da_categoria_produto = models.ManyToManyField(Categoria)
     id_do_produto = models.ManyToManyField(Produto)
-    id_do_fornecedor = models.ForeignKey(Registrar_Fornecedor_mercadoria, on_delete=models.PROTECT, related_name="fornecedor")
-    id_da_localizacao = models.ForeignKey(Registrar_Localizacao_mercadoria, on_delete=models.PROTECT, related_name="localizacao")
-    destino_da_mercadoria_pais = models.ForeignKey(Pais, on_delete=models.PROTECT)
-    destino_da_mercadoria_municipio = models.ForeignKey(Municipio, on_delete=models.PROTECT)
-    destino_da_mercadoria_continente = models.ForeignKey(Continente, on_delete=models.PROTECT)
-    destino_da_mercadoria_provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT)
+    id_do_fornecedor = models.ForeignKey(Registrar_Fornecedor_mercadoria, on_delete=models.CASCADE, related_name="fornecedor")
+    id_da_localizacao = models.ForeignKey(Registrar_Localizacao_mercadoria, on_delete=models.CASCADE, related_name="localizacao")
+    destino_da_mercadoria_pais = models.ForeignKey(Pais, on_delete=models.CASCADE)
+    destino_da_mercadoria_municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE)
+    destino_da_mercadoria_continente = models.ForeignKey(Continente, on_delete=models.CASCADE)
+    destino_da_mercadoria_provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE)
     peso = models.FloatField()
     dimensao = models.CharField(max_length=150)
     marca = models.CharField(max_length=150)
     modelo = models.CharField(max_length=150)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     ficheiro_da_fatura = models.ImageField(upload_to='')
+    
 
     def __str__(self):
         return self.descricao
     
 
 class Registrar_Certificado_Camara_Comercio(models.Model):
+
     descricao = models.CharField(max_length=1000)
     certificado = models.ImageField(upload_to='')
     id_da_factura = models.ForeignKey(Submeter_Factura, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.descricao
+    
+
+
+
+class Menu(models.Model):
+    nome = models.CharField(max_length=100)
+    pai = models.ForeignKey('self', null=True, blank=True, related_name='filho', on_delete=models.CASCADE)
+    id_do_usuario = models.ForeignKey(TipoUsuario, on_delete=models.CASCADE) 
+
+    def __str__(self):
+        return self.nome
+    
+"""""
+#Menu do comprador
+if not Menu.objects.exists():
+    #id 1
+    Menu.objects.create(nome='inicio', id_do_usuario=TipoUsuario.objects.get(id=1))
+
+    #id 2
+    Menu.objects.create(nome='Postagem Mercadoria', id_do_usuario=TipoUsuario.objects.get(id=1))
+    Menu.objects.create(nome='Registrar Fornecedores', pai=Menu.objects.get(id=2), id_do_usuario=TipoUsuario.objects.get(id=1))
+    Menu.objects.create(nome='Submeter Facturas', pai=Menu.objects.get(id=2), id_do_usuario=TipoUsuario.objects.get(id=1))
+    Menu.objects.create(nome='Mercadoria', pai=Menu.objects.get(id=2), id_do_usuario=TipoUsuario.objects.get(id=1))
+    Menu.objects.create(nome='Registrar Produtos', pai=Menu.objects.get(id=2), id_do_usuario=TipoUsuario.objects.get(id=1))
+    Menu.objects.create(nome='Certificado do Comercio', pai=Menu.objects.get(id=2), id_do_usuario=TipoUsuario.objects.get(id=1))
+    Menu.objects.create(nome='Todas Facturas', pai=Menu.objects.get(id=2), id_do_usuario=TipoUsuario.objects.get(id=1))
+    Menu.objects.create(nome='Sair', id_do_usuario=TipoUsuario.objects.get(id=1))
+
+    #Menu do despachante
+    #id 10
+    Menu.objects.create(nome='Mercadorias', id_do_usuario=TipoUsuario.objects.get(id=2))
+    #id 11
+    Menu.objects.create(nome='Contactar', pai=Menu.objects.get(id=10), id_do_usuario=TipoUsuario.objects.get(id=2))
+    Menu.objects.create(nome='Comprador', pai=Menu.objects.get(id=11), id_do_usuario=TipoUsuario.objects.get(id=2))
+    Menu.objects.create(nome='Transportadora', pai=Menu.objects.get(id=11), id_do_usuario=TipoUsuario.objects.get(id=2))
+    Menu.objects.create(nome='Actualizar Mercadoria', id_do_usuario=TipoUsuario.objects.get(id=2))
+    Menu.objects.create(nome='Verificar Avaliação ', id_do_usuario=TipoUsuario.objects.get(id=2))
+    Menu.objects.create(nome='Valor a Pagar', id_do_usuario=TipoUsuario.objects.get(id=2))
+    Menu.objects.create(nome='Executar Despacho', id_do_usuario=TipoUsuario.objects.get(id=2))
+    Menu.objects.create(nome='Apresenta taxas pagas', id_do_usuario=TipoUsuario.objects.get(id=2))
+    Menu.objects.create(nome='Confirmar despacho', id_do_usuario=TipoUsuario.objects.get(id=2))
+"""""

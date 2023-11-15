@@ -17,6 +17,8 @@ from core.views import Registrar_Localizacao_mercadoriaViewSet
 from core.views import Submeter_FacturaViewSet
 from core.views import CategoriaViewSet
 from core.views import ProdutoViewSet
+from core.views import MenuViewSet
+from core.views import TipoUsuarioViewSet
 
 
 from core.views import ContinenteViewSet
@@ -33,6 +35,8 @@ router.register(r'comprador-registrar-localizacao', Registrar_Localizacao_mercad
 router.register(r'comprador-submeter-factura', Submeter_FacturaViewSet)
 router.register(r'categoria', CategoriaViewSet)
 router.register(r'produtos', ProdutoViewSet)
+router.register(r'tipo-usuario', TipoUsuarioViewSet)
+
 
 router.register(r'continente', ContinenteViewSet)
 router.register(r'pais', PaisViewSet)
@@ -49,7 +53,7 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token),
     path('dj-rest-auth/password/reset/', PasswordResetView.as_view(), name='password_reset'),
     path('dj-rest-auth/password/reset/confirm/<str:uidb64>/<str:token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-
+    path('menus/', MenuViewSet.as_view(), name='menu-list'),
 
 ]
 

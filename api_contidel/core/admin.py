@@ -7,11 +7,13 @@ from .models import Registrar_Localizacao_mercadoria
 from .models import Submeter_Factura
 from .models import Categoria
 from .models import Produto
+from .models import Menu
 
 from .models import Continente
 from .models import Pais
 from .models import Provincia
 from .models import Municipio
+from .models import TipoUsuario
 
 
 
@@ -22,6 +24,8 @@ admin.site.register(Registrar_Localizacao_mercadoria)
 admin.site.register(Submeter_Factura)
 admin.site.register(Categoria)
 admin.site.register(Produto)
+admin.site.register(Menu)
+admin.site.register(TipoUsuario)
 
 
 admin.site.register(Continente)
